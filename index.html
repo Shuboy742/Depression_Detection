@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depression Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500">
+    <!-- Navigation -->
+    <nav class="bg-gray-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="#" class="text-white font-bold text-xl">Depression Detection</a>
+                </div>
+                <!-- Navigation Links -->
+                <div class="hidden md:block">
+                    <ul class="ml-10 flex items-center space-x-4">
+                        <li>
+                            <li><a href="{{ url_for('depression_session') }}" class="hover:bg-green-600 text-white  px-2 py-2 rounded-xl">Depression Session</a></li>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('logout')}}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md font-medium">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="p-6">
+                <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Depression Detection</h1>
+            <hr><br>
+
+                <form action="{{ url_for('upload_video') }}" method="post" enctype="multipart/form-data"
+                    class="flex flex-col justify-center items-center mb-6">
+                    <label for="video-upload"
+                        class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out">Choose
+                        Video</label>
+                    <input id="video-upload" type="file" name="video" accept="video/*" class="hidden" />
+                    <input type="submit"
+                        class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out"
+                        value="Upload">
+                </form>
+                <br>
+                <hr>
+                <br>
+                
+                {% if audio_detect %}
+
+                <h1 class="text-3xl font-bold text-center mb-6 text-gray-800"> Audio Based Detect - {{ audio_detect }}</h1> 
+                <br>
+                <hr>
+                <br>
+                {% endif %}
+                
+                <!-- Determine Depression Status -->
+                {% if emotions %}
+                    {% set depression_score = emotions['Sad'] + emotions['Angry'] + emotions['Disgusted'] + emotions['Fearful'] %}
+                    {% if depression_score >= 50 %}
+                        <h1 class="text-3xl font-bold text-center mb-6 text-red-600 depression-status depressed"> Person Emotions Based Detect (video) - Person is Depressed</h1>
+                    {% else %}
+                        <h1 class="text-3xl font-bold text-center mb-6 text-green-600 depression-status normal">Person Emotions Based Detect (video) - Person is Normal</h1>
+                    {% endif %}
+                    <br>
+                <hr>
+                <br>
+                {% endif %}
+                
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between">
+                {% if video_path %}
+                <div class="w-1/2 mx-auto mb-6">
+                    <video controls style="width:50%;height:100%">
+                        <source src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                {% endif %}
+                <!-- Emotion Detection -->
+{% if emotions %}
+<div class="w-1/2 mx-auto mb-6">
+    <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead>
+            <tr>
+                <th class="py-3 px-4 bg-gray-800 text-white font-semibold">Emotion</th>
+                <th class="py-3 px-4 bg-gray-800 text-white font-semibold">Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for emotion, percentage in emotions.items() %}
+            <tr>
+                <td class="py-3 px-4 text-black border">{{ emotion }}</td>
+                <td class="py-3 px-4 text-black border">{{ percentage }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+            
+            
+            </div>
+                
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-10 container-fluid" >
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8  justify-between ">
+            <!-- About Us -->
+            <div class="container-fluid">
+            <div class="w-1/2 pl-5">
+                <h2 class="text-xl font-bold mb-4 " style="margin: 1px;">About Us</h2>
+                <p style="margin: 10px;">We use advanced AI to detect depression 
+                and connect users with doctors. Our 
+                platform analyzes text, voice, and 
+                behavior to spot signs of depression. 
+                Users get instant assessments and support
+                from professionals, prioritizing privacy 
+                and compassion for better mental health care.</p>
+            </div>
+            <!-- Social Links -->
+            <div class="w-1/2">
+                <h2 class="text-xl font-bold mb-4">Social Links</h2>
+                <ul class="flex space-x-4">
+                    <li><a href="#" class="hover:text-indigo-500">Facebook</a></li>
+                    <li><a href="#" class="hover:text-indigo-500">Twitter</a></li>
+                    <li><a href="#" class="hover:text-indigo-500">Instagram</a></li>
+                </ul>
+            </div>
+        </div>
+        </div>
+    </footer>
+    <script src="https://unpkg.com/hyperscript@2.2.0/dist/hyperscript.js"></script>
+</body>
+
+</html>
